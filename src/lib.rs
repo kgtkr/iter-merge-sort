@@ -3,17 +3,17 @@ where
     T: Iterator + Clone,
     T::Item: Clone + Ord,
 {
-    fn merge_sort(self, vec: Vec<T>, desc: bool) -> MergeSort<T>;
+    fn merge_sort(self, desc: bool) -> MergeSort<T>;
 }
 
-impl<T> MergeSortImpl<T> for T
+impl<T> MergeSortImpl<T> for Vec<T>
 where
     T: Iterator + Clone,
     T::Item: Clone + Ord,
 {
-    fn merge_sort(self, vec: Vec<T>, desc: bool) -> MergeSort<T> {
+    fn merge_sort(self, desc: bool) -> MergeSort<T> {
         MergeSort {
-            iters: vec.iter()
+            iters: self.iter()
                 .map(|iter| (iter.clone(), None))
                 .collect::<Vec<_>>(),
             desc: desc,
@@ -63,5 +63,65 @@ where
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn emepy() {
+        let vec1: Vec<i32> = Vec::new();
+        let vec2: Vec<std::vec::IntoIter<i32>> = Vec::new();
+
+        assert_eq!(vec1, vec2.merge_sort(true).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn one_desc() {
+        assert_eq!(
+            vec![3, 2, 1],
+            vec![vec![3, 2, 1].into_iter()]
+                .merge_sort(true)
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn one_not_desc() {
+        assert_eq!(
+            vec![1, 2, 3],
+            vec![vec![1, 2, 3].into_iter()]
+                .merge_sort(false)
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn desc() {
+        assert_eq!(
+            vec![5, 3, 2, 1],
+            vec![
+                vec![5, 1].into_iter(),
+                vec![].into_iter(),
+                vec![3, 2].into_iter(),
+                vec![].into_iter(),
+            ].merge_sort(true)
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn not_desc() {
+        assert_eq!(
+            vec![1, 2, 2, 3, 4, 4],
+            vec![
+                vec![2, 4].into_iter(),
+                vec![1, 3].into_iter(),
+                vec![2, 4].into_iter(),
+            ].merge_sort(false)
+                .collect::<Vec<_>>()
+        );
     }
 }
