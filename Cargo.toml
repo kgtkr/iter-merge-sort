@@ -2,5 +2,14 @@
 name = "iter-merge-sort"
 version = "0.1.0"
 authors = ["kgtkr <kgtkr.jp@gmail.com>"]
+repository = "https://github.com/kgtkr/cron"
+documentation = "https://docs.rs/iter-merge-sort"
+readme = "README.md"
+description = "イテレーターをマージソート"
+keywords = [ "iterator", "sort" ]
+license = "MIT"
+
+[lib]
+name = "iter_merge_sort"
 
 [dependencies]
