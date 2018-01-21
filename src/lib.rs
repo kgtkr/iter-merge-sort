@@ -79,7 +79,7 @@ mod tests {
     fn one_desc() {
         assert_eq!(
             vec![3, 2, 1],
-            vec![&mut vec![3, 2, 1].into_iter() as &mut Iterator<Item = i32>]
+            vec![&mut vec![3, 2, 1].into_iter() as &mut Iterator<Item = _>]
                 .merge_sort(true)
                 .collect::<Vec<_>>()
         );
@@ -89,7 +89,7 @@ mod tests {
     fn one_not_desc() {
         assert_eq!(
             vec![1, 2, 3],
-            vec![&mut vec![1, 2, 3].into_iter() as &mut Iterator<Item = i32>]
+            vec![&mut vec![1, 2, 3].into_iter() as &mut Iterator<Item = _>]
                 .merge_sort(false)
                 .collect::<Vec<_>>()
         );
@@ -100,10 +100,10 @@ mod tests {
         assert_eq!(
             vec![5, 3, 2, 1],
             vec![
-                &mut vec![5, 1].into_iter() as &mut Iterator<Item = i32>,
-                &mut vec![].into_iter() as &mut Iterator<Item = i32>,
-                &mut vec![3, 2].into_iter() as &mut Iterator<Item = i32>,
-                &mut vec![].into_iter() as &mut Iterator<Item = i32>,
+                &mut vec![5, 1].into_iter() as &mut Iterator<Item = _>,
+                &mut vec![].into_iter() as &mut Iterator<Item = _>,
+                &mut vec![3, 2].into_iter() as &mut Iterator<Item = _>,
+                &mut vec![].into_iter() as &mut Iterator<Item = _>,
             ].merge_sort(true)
                 .collect::<Vec<_>>()
         );
@@ -114,9 +114,9 @@ mod tests {
         assert_eq!(
             vec![1, 2, 2, 3, 4, 4],
             vec![
-                &mut vec![2, 4].into_iter() as &mut Iterator<Item = i32>,
-                &mut vec![1, 3].into_iter() as &mut Iterator<Item = i32>,
-                &mut vec![2, 4].into_iter() as &mut Iterator<Item = i32>,
+                &mut vec![2, 4].into_iter() as &mut Iterator<Item = _>,
+                &mut vec![1, 3].into_iter() as &mut Iterator<Item = _>,
+                &mut vec![2, 4].into_iter() as &mut Iterator<Item = _>,
             ].merge_sort(false)
                 .collect::<Vec<_>>()
         );
@@ -127,9 +127,9 @@ mod tests {
         assert_eq!(
             vec![-2, -1, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 6, 7],
             vec![
-                &mut (3..5) as &mut Iterator<Item = i32>,
-                &mut (-2..4) as &mut Iterator<Item = i32>,
-                &mut (1..) as &mut Iterator<Item = i32>,
+                &mut (3..5) as &mut Iterator<Item = _>,
+                &mut (-2..4) as &mut Iterator<Item = _>,
+                &mut (1..) as &mut Iterator<Item = _>,
             ].merge_sort(false)
                 .take(15)
                 .collect::<Vec<_>>()
