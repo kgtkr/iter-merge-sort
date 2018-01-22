@@ -1,15 +1,17 @@
-pub trait MergeSortImpl<'a, T>
+pub trait MergeSortImpl<T>
 where
-    T: Ord + Clone,
+    T: Iterator,
+    T::Item: Ord + Clone,
 {
-    fn merge_sort(self, desc: bool) -> MergeSort<'a, T>;
+    fn merge_sort(self, desc: bool) -> MergeSort<T>;
 }
 
-impl<'a, T> MergeSortImpl<'a, T> for Vec<&'a mut Iterator<Item = T>>
+impl<T> MergeSortImpl<T> for Vec<T>
 where
-    T: Ord + Clone,
+    T: Iterator,
+    T::Item: Ord + Clone,
 {
-    fn merge_sort(self, desc: bool) -> MergeSort<'a, T> {
+    fn merge_sort(self, desc: bool) -> MergeSort<T> {
         MergeSort {
             iters: self.into_iter()
                 .map(|iter| (iter, None))
@@ -19,21 +21,22 @@ where
     }
 }
 
-pub struct MergeSort<'a, T>
+pub struct MergeSort<T>
 where
-    T: Ord,
-    T: 'a,
+    T: Iterator,
+    T::Item: Ord + Clone,
 {
-    iters: Vec<(&'a mut Iterator<Item = T>, Option<T>)>,
+    iters: Vec<(T, Option<T::Item>)>,
     desc: bool,
 }
 
-impl<'a, T> Iterator for MergeSort<'a, T>
+impl<T> Iterator for MergeSort<T>
 where
-    T: Ord + Clone,
+    T: Iterator,
+    T::Item: Ord + Clone,
 {
-    type Item = T;
-    fn next(&mut self) -> Option<T> {
+    type Item = T::Item;
+    fn next(&mut self) -> Option<T::Item> {
         //None埋め
         for i in 0..self.iters.len() {
             match self.iters[i].1 {
@@ -70,7 +73,7 @@ mod tests {
     #[test]
     fn emepy() {
         let vec1: Vec<i32> = Vec::new();
-        let vec2: Vec<&mut Iterator<Item = i32>> = Vec::new();
+        let vec2: Vec<std::vec::IntoIter<i32>> = Vec::new();
 
         assert_eq!(vec1, vec2.merge_sort(true).collect::<Vec<_>>());
     }
@@ -79,7 +82,7 @@ mod tests {
     fn one_desc() {
         assert_eq!(
             vec![3, 2, 1],
-            vec![&mut vec![3, 2, 1].into_iter() as &mut Iterator<Item = _>]
+            vec![vec![3, 2, 1].into_iter()]
                 .merge_sort(true)
                 .collect::<Vec<_>>()
         );
@@ -89,7 +92,7 @@ mod tests {
     fn one_not_desc() {
         assert_eq!(
             vec![1, 2, 3],
-            vec![&mut vec![1, 2, 3].into_iter() as &mut Iterator<Item = _>]
+            vec![vec![1, 2, 3].into_iter()]
                 .merge_sort(false)
                 .collect::<Vec<_>>()
         );
@@ -100,10 +103,10 @@ mod tests {
         assert_eq!(
             vec![5, 3, 2, 1],
             vec![
-                &mut vec![5, 1].into_iter() as &mut Iterator<Item = _>,
-                &mut vec![].into_iter() as &mut Iterator<Item = _>,
-                &mut vec![3, 2].into_iter() as &mut Iterator<Item = _>,
-                &mut vec![].into_iter() as &mut Iterator<Item = _>,
+                vec![5, 1].into_iter(),
+                vec![].into_iter(),
+                vec![3, 2].into_iter(),
+                vec![].into_iter(),
             ].merge_sort(true)
                 .collect::<Vec<_>>()
         );
@@ -114,23 +117,20 @@ mod tests {
         assert_eq!(
             vec![1, 2, 2, 3, 4, 4],
             vec![
-                &mut vec![2, 4].into_iter() as &mut Iterator<Item = _>,
-                &mut vec![1, 3].into_iter() as &mut Iterator<Item = _>,
-                &mut vec![2, 4].into_iter() as &mut Iterator<Item = _>,
+                vec![2, 4].into_iter(),
+                vec![1, 3].into_iter(),
+                vec![2, 4].into_iter(),
             ].merge_sort(false)
                 .collect::<Vec<_>>()
         );
     }
 
     #[test]
-    fn infinite() {
+    fn infinite_not_desc() {
         assert_eq!(
-            vec![-2, -1, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 6, 7],
-            vec![
-                &mut (3..5) as &mut Iterator<Item = _>,
-                &mut (-2..4) as &mut Iterator<Item = _>,
-                &mut (1..) as &mut Iterator<Item = _>,
-            ].merge_sort(false)
+            vec![1, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7],
+            vec![(3..), (4..), (1..)]
+                .merge_sort(false)
                 .take(15)
                 .collect::<Vec<_>>()
         );
